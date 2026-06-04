@@ -12,112 +12,43 @@
   <link rel="apple-touch-icon" href="/icon-192.png">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --white: #ffffff;
-      --black: #1a1a1a;
-      --gray: #6b6b6b;
-      --light-gray: #f4f4f4;
-      --border: #e0e0e0;
-    }
-    body {
-      background: var(--white);
-      color: var(--black);
-      font-family: "Univers", "Univers LT Std", "Helvetica Neue", Helvetica, Arial, sans-serif;
-      font-weight: 400;
-      min-height: 100vh;
-    }
-    header {
-      padding: 1.5rem 4rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-bottom: 1px solid var(--border);
-    }
+    :root { --white: #ffffff; --black: #1a1a1a; --gray: #6b6b6b; --light-gray: #f4f4f4; --border: #e0e0e0; }
+    body { background: var(--white); color: var(--black); font-family: "Univers", "Univers LT Std", "Helvetica Neue", Helvetica, Arial, sans-serif; font-weight: 400; min-height: 100vh; }
+    header { padding: 1.5rem 4rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); }
     .logo img { width: 144px; height: auto; display: block; }
-    .portal-label {
-      font-size: 0.65rem;
-      letter-spacing: 0.25em;
-      color: var(--gray);
-    }
-    .hero {
-      padding: 3rem 4rem 2rem;
-      border-bottom: 1px solid var(--border);
-    }
-    .hero h1 {
-      font-size: 1.8rem;
-      font-weight: 300;
-      letter-spacing: 0.05em;
-      color: var(--black);
-      margin-bottom: 0.4rem;
-    }
-    .hero p {
-      font-size: 0.8rem;
-      color: var(--gray);
-      letter-spacing: 0.05em;
-    }
-    .section {
-      padding: 2.5rem 4rem;
-      border-bottom: 1px solid var(--border);
-    }
-    .section-label {
-      font-size: 0.6rem;
-      letter-spacing: 0.35em;
-      color: var(--gray);
-      margin-bottom: 1.2rem;
-      padding-bottom: 0.75rem;
-      border-bottom: 1px solid var(--border);
-    }
-    .project-list { display: flex; flex-direction: column; }
-    .project-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 1rem 1rem;
-      margin: 0 -1rem;
-      border-bottom: 1px solid var(--border);
-      gap: 2rem;
-      transition: background 0.15s ease;
-      text-decoration: none;
-      color: var(--black);
-    }
+    .portal-label { font-size: 0.65rem; letter-spacing: 0.25em; color: var(--gray); }
+    .hero { padding: 3rem 4rem 2rem; border-bottom: 1px solid var(--border); }
+    .hero h1 { font-size: 1.8rem; font-weight: 300; letter-spacing: 0.05em; color: var(--black); margin-bottom: 0.4rem; }
+    .hero p { font-size: 0.8rem; color: var(--gray); letter-spacing: 0.05em; }
+    .section { padding: 2.5rem 4rem; border-bottom: 1px solid var(--border); }
+    .section-label { font-size: 0.6rem; letter-spacing: 0.35em; color: var(--gray); margin-bottom: 1.2rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border); text-transform: uppercase; }
+    .project-row { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1rem; margin: 0 -1rem; border-bottom: 1px solid var(--border); gap: 2rem; transition: background 0.15s ease; cursor: pointer; }
     .project-row:hover { background: var(--light-gray); }
-    .project-row:last-child { border-bottom: none; }
     .project-info { display: flex; align-items: center; gap: 1.5rem; flex: 1; }
-    .project-status {
-      font-size: 0.55rem;
-      letter-spacing: 0.2em;
-      color: var(--gray);
-      border: 1px solid var(--border);
-      padding: 0.25rem 0.6rem;
-      white-space: nowrap;
-      min-width: 50px;
-      text-align: center;
-    }
-    .project-status.open { border-color: var(--black); color: var(--black); }
-    .project-name {
-      font-size: 0.85rem;
-      font-weight: 400;
-      letter-spacing: 0.05em;
-    }
-    .project-meta {
-      font-size: 0.7rem;
-      color: var(--gray);
-      margin-top: 0.2rem;
-      letter-spacing: 0.03em;
-    }
+    .project-status { font-size: 0.55rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--black); border: 1px solid var(--black); padding: 0.25rem 0.6rem; white-space: nowrap; }
+    .project-name { font-size: 0.85rem; font-weight: 400; letter-spacing: 0.05em; }
+    .project-meta { font-size: 0.7rem; color: var(--gray); margin-top: 0.2rem; }
     .arrow { font-size: 0.8rem; color: var(--gray); flex-shrink: 0; }
-    .empty { font-size: 0.75rem; color: var(--gray); letter-spacing: 0.05em; padding: 1rem 0; }
-    footer {
-      padding: 2rem 4rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 2rem;
-    }
+    .empty { font-size: 0.75rem; color: var(--gray); padding: 1rem 0; }
+    .loading { font-size: 0.75rem; color: var(--gray); padding: 1rem 0; letter-spacing: 0.05em; }
+    .doc-view { display: none; }
+    .doc-view.active { display: block; }
+    .project-view.hidden { display: none; }
+    .back-btn { display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gray); cursor: pointer; padding: 0.5rem 0; border: none; background: none; font-family: inherit; margin-bottom: 1rem; }
+    .back-btn:hover { color: var(--black); }
+    .doc-row { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1rem; margin: 0 -1rem; border-bottom: 1px solid var(--border); gap: 2rem; transition: background 0.15s ease; }
+    .doc-row:hover { background: var(--light-gray); }
+    .doc-info { display: flex; align-items: center; gap: 1.5rem; flex: 1; }
+    .doc-type-tag { font-size: 0.55rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gray); border: 1px solid var(--border); padding: 0.25rem 0.6rem; white-space: nowrap; min-width: 50px; text-align: center; }
+    .doc-name { font-size: 0.85rem; font-weight: 400; letter-spacing: 0.05em; }
+    .doc-actions { display: flex; gap: 0.6rem; align-items: center; flex-shrink: 0; }
+    .btn { font-family: inherit; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; padding: 0.5rem 1rem; border: 1px solid var(--border); cursor: pointer; transition: all 0.2s ease; text-decoration: none; display: inline-block; color: var(--black); background: var(--white); }
+    .btn:hover { background: var(--black); color: var(--white); border-color: var(--black); }
+    .btn-primary { background: var(--black); color: var(--white); border-color: var(--black); }
+    .btn-primary:hover { background: var(--gray); border-color: var(--gray); }
+    footer { padding: 2rem 4rem; display: flex; justify-content: space-between; align-items: center; margin-top: 2rem; }
     footer p { font-size: 0.65rem; color: var(--gray); letter-spacing: 0.1em; }
-    @media (max-width: 768px) {
-      header, .hero, .section, footer { padding-left: 1.5rem; padding-right: 1.5rem; }
-    }
+    @media (max-width: 768px) { header, .hero, .section, footer { padding-left: 1.5rem; padding-right: 1.5rem; } .doc-row { flex-direction: column; align-items: flex-start; gap: 1rem; } }
   </style>
 </head>
 <body>
@@ -128,33 +59,32 @@
     <span class="portal-label">the studio&#8482;</span>
   </header>
 
-  <section class="hero">
-    <h1>works</h1>
-    <p>tap a project to access documents</p>
-  </section>
+  <div class="project-view" id="projectView">
+    <section class="hero">
+      <h1>works</h1>
+      <p>tap a project to access documents</p>
+    </section>
+    <section class="section">
+      <p class="section-label">open</p>
+      <div id="openProjects"><p class="loading">loading...</p></div>
+    </section>
+    <section class="section">
+      <p class="section-label">not open</p>
+      <div id="notOpenProjects"><p class="empty">no projects</p></div>
+    </section>
+  </div>
 
-  <section class="section">
-    <p class="section-label">open</p>
-    <div class="project-list">
-      <a class="project-row" href="https://drive.google.com/drive/folders/1jYC2SIKBBVU_v-u48X38fnWzbF6CBM8J?usp=sharing">
-        <div class="project-info">
-          <span class="project-status open">open</span>
-          <div>
-            <div class="project-name">magna@1835</div>
-            <div class="project-meta">tap to access documents</div>
-          </div>
-        </div>
-        <span class="arrow">&#8594;</span>
-      </a>
-    </div>
-  </section>
-
-  <section class="section">
-    <p class="section-label">not open</p>
-    <div class="project-list">
-      <p class="empty">no projects</p>
-    </div>
-  </section>
+  <div class="doc-view" id="docView">
+    <section class="hero">
+      <button class="back-btn" onclick="showProjects()">&#8592; back to works</button>
+      <h1 id="projectTitle"></h1>
+      <p>tap a document to open, edit, or print</p>
+    </section>
+    <section class="section">
+      <p class="section-label">documents</p>
+      <div id="docList"></div>
+    </section>
+  </div>
 
   <footer>
     <p>&#169; 2026 ehbda | the studio&#8482;</p>
@@ -162,9 +92,55 @@
   </footer>
 
   <script>
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("/sw.js");
+    const API = 'https://script.google.com/macros/s/AKfycbwAVEPG-619hCCm_ayrMzPnhcgczYM-prQAuWG7WR9XoRJB6-KoPFO_IE6Zjswz66heUQ/exec';
+
+    function getType(mime) {
+      if (mime.includes('spreadsheet') || mime.includes('excel')) return 'sheet';
+      if (mime.includes('pdf')) return 'pdf';
+      if (mime.includes('document') || mime.includes('word')) return 'doc';
+      if (mime.includes('presentation')) return 'slides';
+      if (mime.includes('image')) return 'image';
+      return 'file';
     }
+
+    function showProjects() {
+      document.getElementById('projectView').classList.remove('hidden');
+      document.getElementById('docView').classList.remove('active');
+    }
+
+    function showDocs(name, files) {
+      document.getElementById('projectView').classList.add('hidden');
+      document.getElementById('docView').classList.add('active');
+      document.getElementById('projectTitle').textContent = name;
+      const list = document.getElementById('docList');
+      list.innerHTML = '';
+      if (!files.length) { list.innerHTML = '<p class="empty">no documents yet</p>'; return; }
+      files.forEach(f => {
+        const row = document.createElement('div');
+        row.className = 'doc-row';
+        row.innerHTML = `<div class="doc-info"><span class="doc-type-tag">${getType(f.type)}</span><div class="doc-name">${f.name}</div></div><div class="doc-actions"><a class="btn btn-primary" href="${f.url}" target="_blank" rel="noopener">open</a><a class="btn" href="${f.url}" target="_blank" rel="noopener">print</a><a class="btn" href="https://drive.google.com/uc?export=download&id=${f.id}" target="_blank" rel="noopener">download</a></div>`;
+        list.appendChild(row);
+      });
+    }
+
+    fetch(API)
+      .then(r => r.json())
+      .then(data => {
+        const openEl = document.getElementById('openProjects');
+        openEl.innerHTML = '';
+        data.folders.forEach(folder => {
+          if (folder.name.toLowerCase() === 'open' || folder.name.toLowerCase() === 'not open') return;
+          const row = document.createElement('div');
+          row.className = 'project-row';
+          row.innerHTML = `<div class="project-info"><span class="project-status">open</span><div><div class="project-name">${folder.name}</div><div class="project-meta">${folder.files.length} document${folder.files.length !== 1 ? 's' : ''}</div></div></div><span class="arrow">&#8594;</span>`;
+          row.onclick = () => showDocs(folder.name, folder.files);
+          openEl.appendChild(row);
+        });
+        if (!openEl.children.length) openEl.innerHTML = '<p class="empty">no open projects</p>';
+      })
+      .catch(() => { document.getElementById('openProjects').innerHTML = '<p class="empty">unable to load — check connection</p>'; });
+
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js');
   </script>
 </body>
 </html>
