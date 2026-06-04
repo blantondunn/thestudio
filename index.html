@@ -70,7 +70,7 @@
     </section>
     <section class="section">
       <p class="section-label">not open</p>
-      <div id="notOpenProjects"><p class="empty">no projects</p></div>
+      <div id="notOpenProjects"><p class="loading">loading...</p></div>
     </section>
   </div>
 
@@ -118,27 +118,33 @@
       files.forEach(f => {
         const row = document.createElement('div');
         row.className = 'doc-row';
-        row.innerHTML = `<div class="doc-info"><span class="doc-type-tag">${getType(f.type)}</span><div class="doc-name">${f.name}</div></div><div class="doc-actions"><a class="btn btn-primary" href="${f.url}" target="_blank" rel="noopener">open</a><a class="btn" href="${f.url}" target="_blank" rel="noopener">print</a><a class="btn" href="https://drive.google.com/uc?export=download&id=${f.id}" target="_blank" rel="noopener">download</a></div>`;
+        row.innerHTML = '<div class="doc-info"><span class="doc-type-tag">' + getType(f.type) + '</span><div class="doc-name">' + f.name + '</div></div><div class="doc-actions"><a class="btn btn-primary" href="' + f.url + '" target="_blank" rel="noopener">open</a><a class="btn" href="' + f.url + '" target="_blank" rel="noopener">print</a><a class="btn" href="https://drive.google.com/uc?export=download&id=' + f.id + '" target="_blank" rel="noopener">download</a></div>';
         list.appendChild(row);
+      });
+    }
+
+    function renderProjects(projects, el, status) {
+      el.innerHTML = '';
+      if (!projects.length) { el.innerHTML = '<p class="empty">no projects</p>'; return; }
+      projects.forEach(p => {
+        const row = document.createElement('div');
+        row.className = 'project-row';
+        row.innerHTML = '<div class="project-info"><span class="project-status">' + status + '</span><div><div class="project-name">' + p.name + '</div><div class="project-meta">' + p.files.length + ' document' + (p.files.length !== 1 ? 's' : '') + '</div></div></div><span class="arrow">&#8594;</span>';
+        row.onclick = () => showDocs(p.name, p.files);
+        el.appendChild(row);
       });
     }
 
     fetch(API)
       .then(r => r.json())
       .then(data => {
-        const openEl = document.getElementById('openProjects');
-        openEl.innerHTML = '';
-        data.folders.forEach(folder => {
-          if (folder.name.toLowerCase() === 'open' || folder.name.toLowerCase() === 'not open') return;
-          const row = document.createElement('div');
-          row.className = 'project-row';
-          row.innerHTML = `<div class="project-info"><span class="project-status">open</span><div><div class="project-name">${folder.name}</div><div class="project-meta">${folder.files.length} document${folder.files.length !== 1 ? 's' : ''}</div></div></div><span class="arrow">&#8594;</span>`;
-          row.onclick = () => showDocs(folder.name, folder.files);
-          openEl.appendChild(row);
-        });
-        if (!openEl.children.length) openEl.innerHTML = '<p class="empty">no open projects</p>';
+        renderProjects(data.open, document.getElementById('openProjects'), 'open');
+        renderProjects(data.notOpen, document.getElementById('notOpenProjects'), 'not open');
       })
-      .catch(() => { document.getElementById('openProjects').innerHTML = '<p class="empty">unable to load — check connection</p>'; });
+      .catch(() => {
+        document.getElementById('openProjects').innerHTML = '<p class="empty">unable to load</p>';
+        document.getElementById('notOpenProjects').innerHTML = '<p class="empty">unable to load</p>';
+      });
 
     if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js');
   </script>
