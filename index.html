@@ -107,7 +107,8 @@
         <h3>send text message</h3>
         <div class="notify-field">
           <label>to (phone number)</label>
-          <input type="tel" id="toPhone" placeholder="+1 215 555 0000" />
+          <input type="tel" id="toPhone" placeholder="2155550000" maxlength="10" style="letter-spacing:0.1em;" />
+          <small style="font-size:0.6rem;color:var(--gray);margin-top:0.2rem;display:block;">10 digits, no spaces or dashes</small>
         </div>
         <div class="notify-field">
           <label>message</label>
@@ -154,11 +155,13 @@
     }
 
     async function sendText() {
-      const to = document.getElementById('toPhone').value.trim();
+      const raw = document.getElementById('toPhone').value.replace(/\D/g, '');
+      const to = raw.length === 10 ? '+1' + raw : (raw.length === 11 && raw[0] === '1' ? '+' + raw : null);
       const body = document.getElementById('msgBody').value.trim();
       const status = document.getElementById('sendStatus');
 
-      if (!to || !body) { status.textContent = 'please enter a phone number and message'; status.className = 'send-status error'; return; }
+      if (!to) { status.textContent = 'please enter a valid 10-digit phone number'; status.className = 'send-status error'; return; }
+      if (!body) { status.textContent = 'please enter a message'; status.className = 'send-status error'; return; }
 
       status.textContent = 'sending...';
       status.className = 'send-status';
