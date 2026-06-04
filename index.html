@@ -30,7 +30,7 @@
     .project-meta { font-size: 0.7rem; color: var(--gray); margin-top: 0.2rem; }
     .arrow { font-size: 0.8rem; color: var(--gray); flex-shrink: 0; }
     .empty { font-size: 0.75rem; color: var(--gray); padding: 1rem 0; }
-    .loading { font-size: 0.75rem; color: var(--gray); padding: 1rem 0; letter-spacing: 0.05em; }
+    .loading { font-size: 0.75rem; color: var(--gray); padding: 1rem 0; }
     .doc-view { display: none; }
     .doc-view.active { display: block; }
     .project-view.hidden { display: none; }
@@ -46,6 +46,22 @@
     .btn:hover { background: var(--black); color: var(--white); border-color: var(--black); }
     .btn-primary { background: var(--black); color: var(--white); border-color: var(--black); }
     .btn-primary:hover { background: var(--gray); border-color: var(--gray); }
+    .btn-notify { background: var(--white); color: var(--black); border-color: var(--border); font-size: 0.6rem; }
+    .btn-notify:hover { background: var(--black); color: var(--white); border-color: var(--black); }
+
+    /* Notify panel */
+    .notify-panel { display: none; background: var(--light-gray); padding: 1.5rem; margin: 1rem -1rem 0; }
+    .notify-panel.open { display: block; }
+    .notify-panel h3 { font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--black); margin-bottom: 1rem; }
+    .notify-field { margin-bottom: 0.8rem; }
+    .notify-field label { display: block; font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gray); margin-bottom: 0.3rem; }
+    .notify-field input, .notify-field textarea { width: 100%; padding: 0.5rem 0.75rem; border: 1px solid var(--border); font-family: inherit; font-size: 0.8rem; background: var(--white); color: var(--black); }
+    .notify-field textarea { height: 80px; resize: none; }
+    .notify-actions { display: flex; gap: 0.6rem; margin-top: 1rem; }
+    .send-status { font-size: 0.7rem; color: var(--gray); margin-top: 0.5rem; }
+    .send-status.success { color: #2d7a2d; }
+    .send-status.error { color: #c0392b; }
+
     footer { padding: 2rem 4rem; display: flex; justify-content: space-between; align-items: center; margin-top: 2rem; }
     footer p { font-size: 0.65rem; color: var(--gray); letter-spacing: 0.1em; }
     @media (max-width: 768px) { header, .hero, .section, footer { padding-left: 1.5rem; padding-right: 1.5rem; } .doc-row { flex-direction: column; align-items: flex-start; gap: 1rem; } }
@@ -84,6 +100,26 @@
       <p class="section-label">documents</p>
       <div id="docList"></div>
     </section>
+    <section class="section">
+      <p class="section-label">notify</p>
+      <button class="btn btn-notify" onclick="toggleNotify()">send text to client</button>
+      <div class="notify-panel" id="notifyPanel">
+        <h3>send text message</h3>
+        <div class="notify-field">
+          <label>to (phone number)</label>
+          <input type="tel" id="toPhone" placeholder="+1 215 555 0000" />
+        </div>
+        <div class="notify-field">
+          <label>message</label>
+          <textarea id="msgBody">ehbda | new document ready in the studio. tap to view: https://thestudio.ehbda.com</textarea>
+        </div>
+        <div class="notify-actions">
+          <button class="btn btn-primary" onclick="sendText()">send</button>
+          <button class="btn" onclick="toggleNotify()">cancel</button>
+        </div>
+        <div class="send-status" id="sendStatus"></div>
+      </div>
+    </section>
   </div>
 
   <footer>
@@ -93,6 +129,9 @@
 
   <script>
     const API = 'https://script.google.com/macros/s/AKfycbwAVEPG-619hCCm_ayrMzPnhcgczYM-prQAuWG7WR9XoRJB6-KoPFO_IE6Zjswz66heUQ/exec';
+    const TWILIO_SID = 'AC122cb755e66e84ad8aa5cc91db091d36';
+    const TWILIO_TOKEN = '15c35d8d880bdd2df4cd10a2906f69ce';
+    const TWILIO_FROM = '+12677107856';
 
     function getType(mime) {
       if (mime.includes('spreadsheet') || mime.includes('excel')) return 'sheet';
@@ -108,10 +147,50 @@
       document.getElementById('docView').classList.remove('active');
     }
 
+    function toggleNotify() {
+      const panel = document.getElementById('notifyPanel');
+      panel.classList.toggle('open');
+      document.getElementById('sendStatus').textContent = '';
+    }
+
+    async function sendText() {
+      const to = document.getElementById('toPhone').value.trim();
+      const body = document.getElementById('msgBody').value.trim();
+      const status = document.getElementById('sendStatus');
+
+      if (!to || !body) { status.textContent = 'please enter a phone number and message'; status.className = 'send-status error'; return; }
+
+      status.textContent = 'sending...';
+      status.className = 'send-status';
+
+      try {
+        const response = await fetch('https://api.twilio.com/2010-04-01/Accounts/' + TWILIO_SID + '/Messages.json', {
+          method: 'POST',
+          headers: {
+            'Authorization': 'Basic ' + btoa(TWILIO_SID + ':' + TWILIO_TOKEN),
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          body: 'To=' + encodeURIComponent(to) + '&From=' + encodeURIComponent(TWILIO_FROM) + '&Body=' + encodeURIComponent(body)
+        });
+        const data = await response.json();
+        if (data.sid) {
+          status.textContent = 'text sent successfully';
+          status.className = 'send-status success';
+        } else {
+          status.textContent = 'error: ' + (data.message || 'unknown error');
+          status.className = 'send-status error';
+        }
+      } catch(e) {
+        status.textContent = 'failed to send — check connection';
+        status.className = 'send-status error';
+      }
+    }
+
     function showDocs(name, files) {
       document.getElementById('projectView').classList.add('hidden');
       document.getElementById('docView').classList.add('active');
       document.getElementById('projectTitle').textContent = name;
+      document.getElementById('notifyPanel').classList.remove('open');
       const list = document.getElementById('docList');
       list.innerHTML = '';
       if (!files.length) { list.innerHTML = '<p class="empty">no documents yet</p>'; return; }
